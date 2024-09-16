@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta para ti</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .card {
+            width: 300px;
+            height: 200px;
+            background-color: #fff;
+            border: 2px solid #ff6b81;
+            border-radius: 10px;
+            position: relative;
+            transform: rotateX(90deg);
+            transform-style: preserve-3d;
+            transform-origin: bottom;
+            transition: transform 1s ease-in-out;
+        }
+
+        .card.open {
+            transform: rotateX(0deg);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ff6b81;
+            border-radius: 10px 10px 0 0;
+            transform-origin: bottom;
+            transform: rotateX(90deg);
+            transition: transform 1s ease-in-out;
+        }
+
+        .card.open::before {
+            transform: rotateX(0deg);
+        }
+
+        .button {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #ff4757;
+        }
+
+        .hearts {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0;
+        }
+
+        .hearts.open {
+            display: block;
+        }
+
+        .heart {
+            font-size: 24px;
+            position: absolute;
+            animation: fly 4s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes fly {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-300px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Estilos para múltiples corazones */
+        .heart:nth-child(1) { left: -20px; animation-delay: 0s; }
+        .heart:nth-child(2) { left: 0px; animation-delay: 0.5s; }
+        .heart:nth-child(3) { left: 20px; animation-delay: 1s; }
+        .heart:nth-child(4) { left: -10px; animation-delay: 1.5s; }
+        .heart:nth-child(5) { left: 10px; animation-delay: 2s; }
+
+    </style>
+</head>
+<body>
+
+<div class="card" id="card">
+    <div class="hearts" id="hearts">
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+    </div>
+</div>
+<button class="button" id="openButton">Abrir Carta</button>
+
+<script>
+    const card = document.getElementById('card');
+    const openButton = document.getElementById('openButton');
+    const hearts = document.getElementById('hearts');
+
+    openButton.addEventListener('click', function() {
+        card.classList.add('open');
+        hearts.classList.add('open');
+        openButton.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
