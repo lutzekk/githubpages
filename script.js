@@ -5,51 +5,52 @@ const heartElement = document.querySelector('.heart');
 let startY = 0;
 let isDragging = false;
 
-// Iniciar el deslizamiento
-coverElement.addEventListener('mousedown', (event) => {
-  startY = event.clientY;
+// Función para iniciar el deslizamiento
+function startDrag(event) {
+  event.preventDefault();
+  
+  if (event.type === 'mousedown') {
+    startY = event.clientY;
+  } else if (event.type === 'touchstart') {
+    startY = event.touches[0].clientY;
+  }
+  
   isDragging = true;
-});
+}
 
-coverElement.addEventListener('touchstart', (event) => {
-  startY = event.touches[0].clientY;
-  isDragging = true;
-});
-
-// Detectar el movimiento del mouse o el dedo
-document.addEventListener('mousemove', (event) => {
+// Función para mover la carta durante el deslizamiento
+function onDrag(event) {
   if (!isDragging) return;
-  const currentY = event.clientY;
+
+  let currentY;
+  if (event.type === 'mousemove') {
+    currentY = event.clientY;
+  } else if (event.type === 'touchmove') {
+    currentY = event.touches[0].clientY;
+  }
+
   const deltaY = currentY - startY;
 
-  // Mover la cubierta conforme se desliza
-  if (deltaY > 0 && deltaY < 150) {  // Controlar hasta qué punto puede deslizarse
+  if (deltaY > 0 && deltaY < 200) {  // Controlar cuánto se puede deslizar
     coverElement.style.transform = `translateY(${deltaY}px)`;
   }
-});
+}
 
-document.addEventListener('touchmove', (event) => {
+// Función para terminar el deslizamiento y abrir la carta
+function stopDrag(event) {
   if (!isDragging) return;
-  const currentY = event.touches[0].clientY;
-  const deltaY = currentY - startY;
+  isDragging = false;
 
-  if (deltaY > 0 && deltaY < 150) {
-    coverElement.style.transform = `translateY(${deltaY}px)`;
+  // Finalizar la apertura cuando el deslizado ha sido suficiente
+  const deltaY = parseInt(coverElement.style.transform.replace('translateY(', '').replace('px)', ''), 10);
+
+  if (deltaY > 100) {  // Si se ha deslizado más de 100px, se abre la carta
+    coverElement.style.transform = 'translateY(200px)';  // Completar el deslizamiento
+    setTimeout(completeOpen, 300);  // Completar la animación después de un corto retraso
+  } else {
+    coverElement.style.transform = 'translateY(0px)';  // Si no se deslizó lo suficiente, vuelve a la posición inicial
   }
-});
-
-// Soltar el deslizamiento
-document.addEventListener('mouseup', () => {
-  if (!isDragging) return;
-  isDragging = false;
-  completeOpen();
-});
-
-document.addEventListener('touchend', () => {
-  if (!isDragging) return;
-  isDragging = false;
-  completeOpen();
-});
+}
 
 function completeOpen() {
   coverElement.classList.add('open-cover');
@@ -60,3 +61,12 @@ function completeOpen() {
     heartElement.style.display = 'block';
   }, 500);
 }
+
+// Eventos de mouse y touch
+coverElement.addEventListener('mousedown', startDrag);
+coverElement.addEventListener('mousemove', onDrag);
+coverElement.addEventListener('mouseup', stopDrag);
+
+coverElement.addEventListener('touchstart', startDrag);
+coverElement.addEventListener('touchmove', onDrag);
+coverElement.addEventListener('touchend', stopDrag);
