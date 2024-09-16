@@ -1,61 +1,62 @@
-// read custom message from query strings
-// Tutorial -> https://youtu.be/6ojp1iWUKw8
+const coverElement = document.querySelector('.cover');
+const paperElement = document.querySelector('.paper');
+const heartElement = document.querySelector('.heart');
 
-const urlSearchParams = new URLSearchParams(window.location.search)
+let startY = 0;
+let isDragging = false;
 
-const messageCustom = urlSearchParams.get('message')
+// Iniciar el deslizamiento
+coverElement.addEventListener('mousedown', (event) => {
+  startY = event.clientY;
+  isDragging = true;
+});
 
-if (messageCustom) {
+coverElement.addEventListener('touchstart', (event) => {
+  startY = event.touches[0].clientY;
+  isDragging = true;
+});
 
-  const mainMessageElement = document.querySelector('#mainMessage')
-  mainMessageElement.textContent = decodeURI(messageCustom)
+// Detectar el movimiento del mouse o el dedo
+document.addEventListener('mousemove', (event) => {
+  if (!isDragging) return;
+  const currentY = event.clientY;
+  const deltaY = currentY - startY;
+
+  // Mover la cubierta conforme se desliza
+  if (deltaY > 0 && deltaY < 150) {  // Controlar hasta qué punto puede deslizarse
+    coverElement.style.transform = `translateY(${deltaY}px)`;
+  }
+});
+
+document.addEventListener('touchmove', (event) => {
+  if (!isDragging) return;
+  const currentY = event.touches[0].clientY;
+  const deltaY = currentY - startY;
+
+  if (deltaY > 0 && deltaY < 150) {
+    coverElement.style.transform = `translateY(${deltaY}px)`;
+  }
+});
+
+// Soltar el deslizamiento
+document.addEventListener('mouseup', () => {
+  if (!isDragging) return;
+  isDragging = false;
+  completeOpen();
+});
+
+document.addEventListener('touchend', () => {
+  if (!isDragging) return;
+  isDragging = false;
+  completeOpen();
+});
+
+function completeOpen() {
+  coverElement.classList.add('open-cover');
+  setTimeout(() => {
+    coverElement.style.zIndex = -1;
+    paperElement.classList.remove('close-paper');
+    paperElement.classList.add('open-paper');
+    heartElement.style.display = 'block';
+  }, 500);
 }
-
-// the tutorial starts here
-
-const btnOpenElement = document.querySelector('#open')
-const btnCloseElement = document.querySelector('#close')
-
-btnCloseElement.disabled = true
-
-
-
-btnOpenElement.addEventListener('click', ()=> {
-  btnOpenElement.disabled = true
-  btnCloseElement.disabled = false
-  const coverElement = document.querySelector('.cover')
-  coverElement.classList.add('open-cover')
-
-  setTimeout(()=>{
-    //
-    coverElement.style.zIndex = -1
-    
-    const paperElement = document.querySelector('.paper')
-    paperElement.classList.remove('close-paper')
-    paperElement.classList.add('open-paper')
-
-    // animacion del corazón
-    const heartElement = document.querySelector('.heart')
-    heartElement.style.display = 'block'
-  
-  }, 500)
-
-})
-btnCloseElement.addEventListener('click', ()=> {
-  btnOpenElement.disabled = false
-  btnCloseElement.disabled = true
-
-  const coverElement = document.querySelector('.cover')
-  const paperElement = document.querySelector('.paper')
-  paperElement.classList.remove('open-paper')
-  paperElement.classList.add('close-paper')
-  
-  setTimeout(()=>{
-    coverElement.style.zIndex = 0
-    coverElement.classList.remove('open-cover')
-
-    // animacion del corazón
-    const heartElement = document.querySelector('.heart')
-    heartElement.style.display = 'none'
-  },500)
-})
